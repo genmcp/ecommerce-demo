@@ -1,0 +1,159 @@
+.terminal {
+    background: var(--surface);
+    color: var(--foreground);
+    font-family: 'Fira Code', 'Courier New', monospace;
+    height: 100%;
+    flex: 1;
+    /* Ensure it grows in flex container */
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid var(--border);
+    overflow: hidden;
+    /* Prevent outer scroll */
+}
+
+.header {
+    padding: 1.5rem 1.5rem 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.logsContainer {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    /* Critical for nested flex scrolling */
+}
+
+.logEntry {
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+    word-break: break-all;
+    opacity: 0;
+    animation: fadeIn 0.2s forwards;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+.timestamp {
+    color: var(--text-muted);
+    margin-right: 0.5rem;
+}
+
+.prefix {
+    color: var(--primary);
+    margin-right: 0.5rem;
+    font-weight: bold;
+}
+
+.error {
+    color: var(--danger);
+}
+
+.success {
+    color: var(--success);
+}
+
+.cursor {
+    display: inline-block;
+    width: 8px;
+    height: 15px;
+    background: var(--primary);
+    animation: blink 1s step-end infinite;
+    vertical-align: middle;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+.activeLine {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem 1.5rem 1rem 1.5rem;
+    /* Top padding, smaller bottom padding */
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--border);
+    /* Separator from logs */
+    background: var(--surface);
+}
+
+.inlineInput {
+    background: transparent;
+    border: none;
+    color: var(--foreground);
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    flex: 1;
+    margin-left: 0.5rem;
+}
+
+.spinner {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+    margin-left: 0.5rem;
+    color: var(--primary);
+}
+
+@keyframes spin {
+    0% {
+        content: "⠋";
+    }
+
+    10% {
+        content: "⠙";
+    }
+
+    20% {
+        content: "⠹";
+    }
+
+    30% {
+        content: "⠸";
+    }
+
+    40% {
+        content: "⠼";
+    }
+
+    50% {
+        content: "⠴";
+    }
+
+    60% {
+        content: "⠦";
+    }
+
+    70% {
+        content: "⠧";
+    }
+
+    80% {
+        content: "⠇";
+    }
+
+    90% {
+        content: "⠏";
+    }
+}
+
+.spinner::after {
+    content: "⠋";
+    animation: spin 1s linear infinite;
+}

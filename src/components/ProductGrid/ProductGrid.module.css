@@ -1,0 +1,91 @@
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+}
+
+.card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary);
+}
+
+.imageContainer {
+    width: 100%;
+    height: 200px;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 3rem;
+    position: relative;
+}
+
+.content {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.price {
+    font-size: 1.125rem;
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.description {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    line-height: 1.4;
+}
+
+.actions {
+    margin-top: auto;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.button {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+    transition: background 0.2s ease;
+}
+
+.button:hover {
+    background: var(--primary-hover);
+}
+
+.button.secondary {
+    background: var(--surface-hover);
+    color: var(--foreground);
+}
+
+.button.secondary:hover {
+    background: var(--border);
+}
