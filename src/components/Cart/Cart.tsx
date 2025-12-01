@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
 import styles from './Cart.module.css';
 
 interface CartItem {
@@ -11,8 +13,74 @@ interface CartProps {
     items: CartItem[];
 }
 
-const Cart: React.FC<CartProps> = ({ items }) => {
-    const total = items.reduce((sum, item) => sum + item.price, 0);
+interface DisplayItem extends CartItem {
+    key: string;
+    isNew: boolean;
+    isRemoving: boolean;
+}
+
+const Cart = ({ items }: CartProps) => {
+    const [displayItems, setDisplayItems] = useState<DisplayItem[]>([]);
+    const prevLengthRef = useRef(0);
+    const isFirstRender = useRef(true);
+    
+    const total = items.reduce((sum, item) => sum + (item.price || 0), 0);
+
+    useEffect(() => {
+        const prevLength = prevLengthRef.current;
+        const currentLength = items.length;
+
+        if (isFirstRender.current) {
+            // First render - show items without animation
+            isFirstRender.current = false;
+            setDisplayItems(items.map((item, idx) => ({
+                ...item,
+                key: `item-${idx}`,
+                isNew: false,
+                isRemoving: false,
+            })));
+            prevLengthRef.current = currentLength;
+            return;
+        }
+
+        if (currentLength > prevLength) {
+            // Items added - animate new ones
+            setDisplayItems(items.map((item, idx) => ({
+                ...item,
+                key: `item-${idx}`,
+                isNew: idx >= prevLength, // Only new items get animation
+                isRemoving: false,
+            })));
+            
+            // Remove "isNew" flag after animation
+            setTimeout(() => {
+                setDisplayItems(prev => prev.map(item => ({ ...item, isNew: false })));
+            }, 300);
+            
+        } else if (currentLength < prevLength) {
+            // Items removed - animate removal
+            // First, mark excess items as removing
+            setDisplayItems(prev => {
+                return prev.map((item, idx) => ({
+                    ...item,
+                    isRemoving: idx >= currentLength,
+                }));
+            });
+            
+            // After animation, update to actual items
+            setTimeout(() => {
+                setDisplayItems(items.map((item, idx) => ({
+                    ...item,
+                    key: `item-${idx}`,
+                    isNew: false,
+                    isRemoving: false,
+                })));
+            }, 300);
+        }
+        // If same length, don't update (prevents re-animation on poll)
+        
+        prevLengthRef.current = currentLength;
+    }, [items]);
 
     return (
         <div className={styles.cart}>
@@ -22,14 +90,17 @@ const Cart: React.FC<CartProps> = ({ items }) => {
             </div>
 
             <div className={styles.items}>
-                {items.length === 0 ? (
+                {displayItems.length === 0 ? (
                     <p className={styles.empty}>Your cart is empty.</p>
                 ) : (
-                    items.map((item, index) => (
-                        <div key={`${item.id}-${index}`} className={styles.item}>
+                    displayItems.map((item) => (
+                        <div 
+                            key={item.key} 
+                            className={`${styles.item} ${item.isNew ? styles.entering : ''} ${item.isRemoving ? styles.removing : ''}`}
+                        >
                             <div className={styles.itemInfo}>
                                 <span className={styles.itemName}>{item.name}</span>
-                                <span className={styles.itemPrice}>${item.price.toFixed(2)}</span>
+                                <span className={styles.itemPrice}>${item.price != null ? item.price.toFixed(2) : '0.00'}</span>
                             </div>
                         </div>
                     ))

@@ -1,0 +1,130 @@
+.toolCalls {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    height: 200px;
+    min-height: 200px;
+    max-height: 300px;
+    display: flex;
+    flex-direction: column;
+    color: var(--foreground);
+}
+
+.header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.title {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.count {
+    background: var(--primary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-xl);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.callsList {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.empty {
+    text-align: center;
+    color: var(--text-muted);
+    margin-top: 1rem;
+    font-size: 0.875rem;
+}
+
+.callItem {
+    display: flex;
+    flex-direction: column;
+    padding: 0.75rem 1rem;
+    background: var(--surface-hover);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--primary);
+    animation: slideIn 0.2s ease forwards;
+}
+
+.callItem.completed {
+    border-left-color: var(--success);
+}
+
+.callItem.error {
+    border-left-color: var(--danger);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.callInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.callHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.toolName {
+    font-weight: 600;
+    font-size: 0.875rem;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    flex: 1;
+    word-break: break-all;
+}
+
+.statusBadge {
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.callItem.calling .statusBadge {
+    background: var(--primary);
+    color: white;
+}
+
+.callItem.completed .statusBadge {
+    background: var(--success);
+    color: white;
+}
+
+.callItem.error .statusBadge {
+    background: var(--danger);
+    color: white;
+}
+
+.timestamp {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-family: 'Fira Code', 'Courier New', monospace;
+}
+

@@ -1,0 +1,78 @@
+# GenMCP Server Deployment
+# Built using: genmcp build -f mcpfile.yaml --tag quay.io/your-org/mcp-server:latest
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-server
+  labels:
+    app: ecommerce-demo
+    component: mcp-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ecommerce-demo
+      component: mcp-server
+  template:
+    metadata:
+      labels:
+        app: ecommerce-demo
+        component: mcp-server
+    spec:
+      containers:
+        - name: mcp-server
+          image: quay.io/your-org/mcp-server:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            # Use in-cluster frontend service URL (faster than external route)
+            - name: MCP_BASE_URL
+              value: "http://frontend-service:3000"
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+              readOnly: true
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+      volumes:
+        - name: config
+          configMap:
+            name: mcp-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp-server-service
+  labels:
+    app: ecommerce-demo
+    component: mcp-server
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app: ecommerce-demo
+    component: mcp-server
+

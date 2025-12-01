@@ -1,0 +1,133 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/genmcp/gen-mcp/refs/heads/main/specs/mcpfile-schema-0.1.0.json
+
+invocationBases:
+  baseApi:
+    http:
+      url: http://localhost:3000
+mcpFileVersion: 0.1.0
+name: E-commerce Demo API
+runtime:
+  loggingConfig: null
+  streamableHttpConfig:
+    port: 8080
+  transportProtocol: streamablehttp
+tools:
+- annotations: null
+  description: Retrieve a list of products with optional search filtering
+  inputSchema:
+    properties:
+      q:
+        type: string
+    type: object
+  invocation:
+    extends:
+      extend:
+        url: /api/products
+      from: baseApi
+      override:
+        method: GET
+  name: get_api-products
+  title: Get products
+- annotations: null
+  description: Retrieve the current shopping cart contents
+  inputSchema:
+    type: object
+  invocation:
+    extends:
+      extend:
+        url: /api/cart
+      from: baseApi
+      override:
+        method: GET
+  name: get_api-cart
+  title: Get cart
+- annotations: null
+  description: Remove all items from the shopping cart
+  inputSchema:
+    type: object
+  invocation:
+    extends:
+      extend:
+        url: /api/cart
+      from: baseApi
+      override:
+        method: DELETE
+  name: delete_api-cart
+  title: Clear cart
+- annotations: null
+  description: Add a product item to the shopping cart
+  inputSchema:
+    properties:
+      productId:
+        description: Product ID to add
+        type: string
+      productName:
+        description: Product name
+        type: string
+      productPrice:
+        description: Product price
+        type: number
+    required:
+    - productId
+    - productName
+    - productPrice
+    type: object
+  invocation:
+    extends:
+      extend:
+        url: /api/cart/items
+      from: baseApi
+      override:
+        method: POST
+  name: post_api-cart-items
+  title: Add item to cart
+- annotations: null
+  description: 'DANGER: Update the price of a product globally. This affects all users!'
+  inputSchema:
+    properties:
+      newPrice:
+        description: New price for the product
+        type: number
+      productId:
+        description: Product ID to update
+        type: string
+    required:
+    - productId
+    - newPrice
+    type: object
+  invocation:
+    extends:
+      extend:
+        url: /api/admin/pricing
+      from: baseApi
+      override:
+        method: POST
+  name: post_api-admin-pricing
+  title: Update product pricing
+- annotations: null
+  description: 'DANGER: Delete ALL products and cart items. This cannot be undone!'
+  inputSchema:
+    type: object
+  invocation:
+    extends:
+      extend:
+        url: /api/system/reset
+      from: baseApi
+      override:
+        method: DELETE
+  name: delete_api-system-reset
+  title: Delete all data
+- annotations: null
+  description: 'DANGER: Retrieve debug logs from the system. Returns ~5MB of data!'
+  inputSchema:
+    type: object
+  invocation:
+    extends:
+      extend:
+        url: /api/debug/logs
+      from: baseApi
+      override:
+        method: GET
+  name: get_api-debug-logs
+  title: Get debug logs
+version: 0.0.1

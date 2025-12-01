@@ -1,0 +1,91 @@
+# Llama Stack Server Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llama-stack
+  labels:
+    app: ecommerce-demo
+    component: llama-stack
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ecommerce-demo
+      component: llama-stack
+  template:
+    metadata:
+      labels:
+        app: ecommerce-demo
+        component: llama-stack
+    spec:
+      containers:
+        - name: llama-stack
+          image: quay.io/your-org/llama-stack:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8321
+              protocol: TCP
+          env:
+            - name: LLAMA_STACK_CONFIG
+              value: "/app/config/run-openai.yaml"
+            - name: MODEL_ID
+              value: "gpt-4o"
+            # MCP Server URL for tool calling
+            - name: MCP_SERVER_URL
+              value: "http://mcp-server-service:8080"
+            # OpenAI API Key from secret
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: llama-stack-secrets
+                  key: OPENAI_API_KEY
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+              readOnly: true
+            - name: data
+              mountPath: /app/data
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8321
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8321
+            initialDelaySeconds: 10
+            periodSeconds: 5
+      volumes:
+        - name: config
+          configMap:
+            name: llama-stack-config
+        - name: data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: llama-stack-service
+  labels:
+    app: ecommerce-demo
+    component: llama-stack
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8321
+      targetPort: 8321
+      protocol: TCP
+      name: http
+  selector:
+    app: ecommerce-demo
+    component: llama-stack
+

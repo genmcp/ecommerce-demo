@@ -3,7 +3,7 @@
   "info": {
     "title": "E-commerce Demo API",
     "description": "API for the Next.js e-commerce demo application",
-    "version": "1.0.0"
+    "version": "2.0.0"
   },
   "servers": [
     {
@@ -31,45 +31,31 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProductsResponse"
-                }
-              }
-            }
+            "description": "Successful response"
           }
         }
       }
     },
-    "/api/cart/{uid}": {
+    "/api/cart": {
       "get": {
         "summary": "Get cart",
-        "description": "Retrieve the cart for a specific user",
+        "description": "Retrieve the current shopping cart contents",
         "operationId": "getCart",
         "tags": ["Cart"],
-        "parameters": [
-          {
-            "name": "uid",
-            "in": "path",
-            "description": "User ID",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CartResponse"
-                }
-              }
-            }
+            "description": "Successful response"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Clear cart",
+        "description": "Remove all items from the shopping cart",
+        "operationId": "clearCart",
+        "tags": ["Cart"],
+        "responses": {
+          "200": {
+            "description": "Cart cleared successfully"
           }
         }
       }
@@ -77,7 +63,7 @@
     "/api/cart/items": {
       "post": {
         "summary": "Add item to cart",
-        "description": "Add a product item to a user's cart",
+        "description": "Add a product item to the shopping cart",
         "operationId": "addCartItem",
         "tags": ["Cart"],
         "requestBody": {
@@ -85,51 +71,29 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AddCartItemRequest"
+                "type": "object",
+                "properties": {
+                  "productId": {
+                    "type": "string",
+                    "description": "Product ID to add"
+                  },
+                  "productName": {
+                    "type": "string",
+                    "description": "Product name"
+                  },
+                  "productPrice": {
+                    "type": "number",
+                    "description": "Product price"
+                  }
+                },
+                "required": ["productId", "productName", "productPrice"]
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Item added successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AddCartItemResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/chat": {
-      "post": {
-        "summary": "Chat with AI assistant",
-        "description": "Send a message to the AI-powered chat assistant",
-        "operationId": "chat",
-        "tags": ["Chat"],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChatRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ChatResponse"
-                }
-              }
-            }
+            "description": "Item added successfully"
           }
         }
       }
@@ -137,7 +101,7 @@
     "/api/admin/pricing": {
       "post": {
         "summary": "Update product pricing",
-        "description": "Update the price of a product (admin only)",
+        "description": "DANGER: Update the price of a product globally. This affects all users!",
         "operationId": "updatePricing",
         "tags": ["Admin"],
         "requestBody": {
@@ -145,41 +109,38 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdatePricingRequest"
+                "type": "object",
+                "properties": {
+                  "productId": {
+                    "type": "string",
+                    "description": "Product ID to update"
+                  },
+                  "newPrice": {
+                    "type": "number",
+                    "description": "New price for the product"
+                  }
+                },
+                "required": ["productId", "newPrice"]
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Price updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UpdatePricingResponse"
-                }
-              }
-            }
+            "description": "Price updated successfully"
           }
         }
       }
     },
     "/api/system/reset": {
       "delete": {
-        "summary": "Reset system",
-        "description": "Reset the entire system database (dangerous operation)",
+        "summary": "Delete all data",
+        "description": "DANGER: Delete ALL products and cart items. This cannot be undone!",
         "operationId": "resetSystem",
         "tags": ["System"],
         "responses": {
           "200": {
-            "description": "System reset successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResetSystemResponse"
-                }
-              }
-            }
+            "description": "System reset successfully"
           }
         }
       }
@@ -187,349 +148,16 @@
     "/api/debug/logs": {
       "get": {
         "summary": "Get debug logs",
-        "description": "Retrieve debug logs from the system",
+        "description": "DANGER: Retrieve debug logs from the system. Returns ~5MB of data!",
         "operationId": "getDebugLogs",
         "tags": ["Debug"],
         "responses": {
           "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DebugLogsResponse"
-                }
-              }
-            }
+            "description": "Successful response"
           }
         }
       }
     }
-  },
-  "components": {
-    "schemas": {
-      "Product": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Product ID"
-          },
-          "name": {
-            "type": "string",
-            "description": "Product name"
-          },
-          "price": {
-            "type": "number",
-            "description": "Product price"
-          },
-          "description": {
-            "type": "string",
-            "description": "Product description"
-          }
-        },
-        "required": ["id", "name", "price", "description"]
-      },
-      "ProductsResponse": {
-        "type": "object",
-        "properties": {
-          "products": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Product"
-            }
-          },
-          "count": {
-            "type": "integer",
-            "description": "Number of products returned"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Response timestamp"
-          },
-          "apiVersion": {
-            "type": "string",
-            "description": "API version"
-          },
-          "requestId": {
-            "type": "string",
-            "description": "Unique request identifier"
-          }
-        },
-        "required": ["products", "count", "timestamp", "apiVersion", "requestId"]
-      },
-      "CartItem": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Product ID"
-          },
-          "name": {
-            "type": "string",
-            "description": "Product name"
-          },
-          "price": {
-            "type": "number",
-            "description": "Product price"
-          }
-        },
-        "required": ["id", "name", "price"]
-      },
-      "CartResponse": {
-        "type": "object",
-        "properties": {
-          "uid": {
-            "type": "string",
-            "description": "User ID"
-          },
-          "items": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CartItem"
-            }
-          },
-          "itemCount": {
-            "type": "integer",
-            "description": "Number of items in cart"
-          },
-          "total": {
-            "type": "string",
-            "description": "Cart total formatted as string"
-          },
-          "currency": {
-            "type": "string",
-            "enum": ["USD"],
-            "description": "Currency code"
-          }
-        },
-        "required": ["uid", "items", "itemCount", "total", "currency"]
-      },
-      "AddCartItemRequest": {
-        "type": "object",
-        "properties": {
-          "uid": {
-            "type": "string",
-            "description": "User ID"
-          },
-          "productId": {
-            "type": "string",
-            "description": "Product ID to add"
-          },
-          "productName": {
-            "type": "string",
-            "description": "Product name"
-          },
-          "productPrice": {
-            "type": "number",
-            "description": "Product price"
-          }
-        },
-        "required": ["uid", "productId", "productName", "productPrice"]
-      },
-      "AddCartItemResponse": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "description": "Whether the operation was successful"
-          },
-          "message": {
-            "type": "string",
-            "description": "Response message"
-          },
-          "cartItemCount": {
-            "type": "integer",
-            "description": "Total items in cart after addition"
-          },
-          "addedItem": {
-            "type": "object",
-            "properties": {
-              "productId": {
-                "type": "string"
-              },
-              "productName": {
-                "type": "string"
-              },
-              "productPrice": {
-                "type": "number"
-              }
-            }
-          }
-        },
-        "required": ["success", "message", "cartItemCount", "addedItem"]
-      },
-      "ChatMessage": {
-        "type": "object",
-        "properties": {
-          "role": {
-            "type": "string",
-            "enum": ["system", "user", "assistant"],
-            "description": "Message role"
-          },
-          "content": {
-            "type": "string",
-            "description": "Message content"
-          }
-        },
-        "required": ["role", "content"]
-      },
-      "ChatRequest": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "description": "User message"
-          },
-          "history": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ChatMessage"
-            },
-            "description": "Conversation history"
-          }
-        },
-        "required": ["message", "history"]
-      },
-      "ChatResponse": {
-        "type": "object",
-        "properties": {
-          "response": {
-            "type": "string",
-            "description": "AI-generated response"
-          }
-        },
-        "required": ["response"]
-      },
-      "UpdatePricingRequest": {
-        "type": "object",
-        "properties": {
-          "productId": {
-            "type": "string",
-            "description": "Product ID to update"
-          },
-          "newPrice": {
-            "type": "number",
-            "description": "New price for the product"
-          },
-          "adminKey": {
-            "type": "string",
-            "description": "Admin authentication key"
-          }
-        },
-        "required": ["productId", "newPrice", "adminKey"]
-      },
-      "UpdatePricingResponse": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "message": {
-            "type": "string"
-          },
-          "warning": {
-            "type": "string"
-          },
-          "previousPrice": {
-            "type": "number"
-          },
-          "newPrice": {
-            "type": "number"
-          },
-          "affectedUsers": {
-            "type": "integer"
-          }
-        },
-        "required": ["success", "message"]
-      },
-      "ResetSystemResponse": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "message": {
-            "type": "string"
-          },
-          "warning": {
-            "type": "string"
-          },
-          "deletedRecords": {
-            "type": "object",
-            "properties": {
-              "users": {
-                "type": "integer"
-              },
-              "products": {
-                "type": "integer"
-              },
-              "orders": {
-                "type": "integer"
-              },
-              "carts": {
-                "type": "integer"
-              }
-            }
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "canUndo": {
-            "type": "boolean"
-          }
-        },
-        "required": ["success", "message"]
-      },
-      "DebugLogsResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string"
-          },
-          "logSize": {
-            "type": "string"
-          },
-          "warning": {
-            "type": "string"
-          },
-          "logs": {
-            "type": "string"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": ["message", "logs", "timestamp"]
-      }
-    }
-  },
-  "tags": [
-    {
-      "name": "Products",
-      "description": "Product catalog operations"
-    },
-    {
-      "name": "Cart",
-      "description": "Shopping cart operations"
-    },
-    {
-      "name": "Chat",
-      "description": "AI chat assistant"
-    },
-    {
-      "name": "Admin",
-      "description": "Administrative operations"
-    },
-    {
-      "name": "System",
-      "description": "System management operations"
-    },
-    {
-      "name": "Debug",
-      "description": "Debugging and logging operations"
-    }
-  ]
+  }
 }
+

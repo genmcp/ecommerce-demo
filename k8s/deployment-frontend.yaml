@@ -1,0 +1,77 @@
+# Frontend Next.js Application Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: ecommerce-demo
+    component: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ecommerce-demo
+      component: frontend
+  template:
+    metadata:
+      labels:
+        app: ecommerce-demo
+        component: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: quay.io/your-org/ecommerce-frontend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          env:
+            # Use in-cluster service URLs (faster than external routes)
+            - name: LLAMA_STACK_URL
+              value: "http://llama-stack-service:8321"
+            - name: MCP_SERVER_URL
+              value: "http://mcp-server-service:8080"
+            - name: MODEL_ID
+              value: "gpt-4o"
+            - name: ENABLE_TOOLS
+              value: "true"
+            - name: DEFAULT_USER_ID
+              value: "demo-user"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  labels:
+    app: ecommerce-demo
+    component: frontend
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3000
+      targetPort: 3000
+      protocol: TCP
+      name: http
+  selector:
+    app: ecommerce-demo
+    component: frontend
+

@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/genmcp/gen-mcp/refs/heads/main/specs/mcpfile-schema.json
+# GenMCP MCP Server Configuration - PRODUCTION
+# This file is used for in-cluster deployment on OpenShift
+# 
+# Key difference: Uses service URL instead of localhost for faster in-cluster communication
+
+kind: MCPToolDefinitions
+schemaVersion: "0.2.0"
+
+name: ecommerce-shopper
+description: |
+  Safe shopping assistant API for an e-commerce demo.
+  Provides tools to search products, view cart, and add items to cart.
+  Administrative and system endpoints are intentionally excluded for safety.
+  
+  PRODUCTION CONFIG: Uses in-cluster service URL.
+
+# HTTP configuration - PRODUCTION URLs
+http:
+  # Use Kubernetes service URL for in-cluster communication (faster than route)
+  baseUrl: http://frontend-service:3000
+  timeout: 30s
+
+# Import tools from OpenAPI specification
+import:
+  openapi:
+    path: ./public/openapi.json
+    # Only include safe shopping operations
+    include:
+      - getProducts      # Search and list products
+      - getCart          # View user's shopping cart
+      - addCartItem      # Add item to cart
+    # Explicitly exclude dangerous operations
+    exclude:
+      - chat             # AI chat endpoint (not a tool for the agent)
+      - updatePricing    # DANGER: Changes product prices globally
+      - resetSystem      # DANGER: Wipes the entire database
+      - getDebugLogs     # DANGER: Returns 5MB+ of logs (context window DOS)
+
+# Tool-specific configurations and descriptions (optional overrides)
+tools:
+  - name: getProducts
+    description: |
+      Search for products in the store catalog.
+      Use this to find products by name or browse available items.
+      Returns product ID, name, price, and description.
+    
+  - name: getCart
+    description: |
+      View the contents of a user's shopping cart.
+      Requires the user ID (uid) to retrieve the correct cart.
+      Returns all items in the cart with prices and total.
+    
+  - name: addCartItem
+    description: |
+      Add a single product to the user's shopping cart.
+      Requires: uid (user ID), productId, productName, productPrice.
+      Note: To add multiple quantities, call this tool multiple times.
+

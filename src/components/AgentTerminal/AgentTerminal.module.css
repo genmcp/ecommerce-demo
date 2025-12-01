@@ -57,6 +57,12 @@
     font-weight: bold;
 }
 
+.userPrefix {
+    color: #0066CC;
+    margin-right: 0.5rem;
+    font-weight: bold;
+}
+
 .error {
     color: var(--danger);
 }
@@ -156,4 +162,169 @@
 .spinner::after {
     content: "⠋";
     animation: spin 1s linear infinite;
+}
+
+/* Tool card styles - matching product card design */
+.toolCard {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    opacity: 0;
+    animation: toolCardFadeIn 0.3s forwards;
+}
+
+.toolCard:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+@keyframes toolCardFadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+.toolCardHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.toolTitle {
+    font-weight: 600;
+    color: var(--foreground);
+    font-size: 0.9rem;
+}
+
+.toolList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.toolItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background: var(--surface-hover);
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.toolItem:hover {
+    background: var(--border);
+}
+
+.toolInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.toolName {
+    color: var(--foreground);
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 0.85rem;
+}
+
+.toolEndpoint {
+    color: var(--primary);
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.toolStatus {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.toolStatus.running {
+    color: var(--primary);
+    animation: spin 1s linear infinite;
+}
+
+.toolStatus.completed {
+    color: var(--success);
+}
+
+.toolStatus.error {
+    color: var(--danger);
+}
+
+.toolItemRight {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.expandIcon {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    transition: transform 0.2s ease;
+}
+
+.expandIcon.expanded {
+    transform: rotate(180deg);
+}
+
+.toolDetails {
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    animation: expandIn 0.2s ease;
+}
+
+@keyframes expandIn {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 500px;
+    }
+}
+
+.detailSection {
+    margin-bottom: 0.75rem;
+}
+
+.detailSection:last-child {
+    margin-bottom: 0;
+}
+
+.detailLabel {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detailContent {
+    background: #f9fafb;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--foreground);
+    overflow-x: auto;
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 300px;
+    overflow-y: auto;
 }
