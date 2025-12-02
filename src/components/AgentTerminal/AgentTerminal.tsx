@@ -6,7 +6,6 @@ export interface ToolCall {
     status: 'running' | 'completed' | 'error';
     input?: string;
     output?: string;
-    endpoint?: string;
 }
 
 export interface LogEntry {
@@ -27,6 +26,7 @@ const AgentTerminal: React.FC<AgentTerminalProps> = ({ logs, onSendMessage, isPr
     const [currentTime, setCurrentTime] = React.useState<string>('');
     const [inputValue, setInputValue] = React.useState('');
     const [expandedTools, setExpandedTools] = React.useState<Set<string>>(new Set());
+    const [toolsEnabled, setToolsEnabled] = React.useState<boolean>(true);
 
     useEffect(() => {
         setCurrentTime(new Date().toLocaleTimeString());
@@ -34,6 +34,22 @@ const AgentTerminal: React.FC<AgentTerminalProps> = ({ logs, onSendMessage, isPr
             setCurrentTime(new Date().toLocaleTimeString());
         }, 1000);
         return () => clearInterval(timer);
+    }, []);
+
+    useEffect(() => {
+        // Check if MCP server is configured
+        const checkToolStatus = async () => {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                setToolsEnabled(data.toolsEnabled);
+            } catch (error) {
+                console.error('Failed to check tool status:', error);
+                setToolsEnabled(false);
+            }
+        };
+
+        checkToolStatus();
     }, []);
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -61,7 +77,32 @@ const AgentTerminal: React.FC<AgentTerminalProps> = ({ logs, onSendMessage, isPr
         <div className={styles.terminal}>
             <div className={styles.header}>
                 <span>Personal Shopper</span>
-                <span>v1.0.0</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        fontSize: '11px',
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        backgroundColor: toolsEnabled ? 'rgba(62, 134, 53, 0.1)' : 'rgba(201, 25, 11, 0.1)',
+                        border: `1px solid ${toolsEnabled ? 'rgba(62, 134, 53, 0.3)' : 'rgba(201, 25, 11, 0.3)'}`,
+                        color: toolsEnabled ? '#3E8635' : '#C9190B'
+                    }}>
+                        <span style={{
+                            width: '8px',
+                            height: '8px',
+                            borderRadius: '50%',
+                            backgroundColor: toolsEnabled ? '#3E8635' : '#C9190B',
+                            boxShadow: toolsEnabled
+                                ? '0 0 10px #3E8635'
+                                : '0 0 10px #C9190B',
+                            display: 'inline-block'
+                        }}></span>
+                        {toolsEnabled ? 'Tools' : 'No Tools'}
+                    </span>
+                    <span>v1.0.0</span>
+                </div>
             </div>
 
             <div className={styles.activeLine}>
@@ -105,15 +146,12 @@ const AgentTerminal: React.FC<AgentTerminalProps> = ({ logs, onSendMessage, isPr
                                                 >
                                                     <div className={styles.toolInfo}>
                                                         <span className={styles.toolName}>{tool.tool}</span>
-                                                        {tool.endpoint && (
-                                                            <span className={styles.toolEndpoint}>{tool.endpoint}</span>
-                                                        )}
                                                     </div>
                                                     <div className={styles.toolItemRight}>
                                                         <span className={`${styles.toolStatus} ${styles[tool.status]}`}>
                                                             {tool.status === 'running' && '⟳'}
-                                                            {tool.status === 'completed' && '✓'}
-                                                            {tool.status === 'error' && '✗'}
+                                                            {tool.status === 'completed' && '✅'}
+                                                            {tool.status === 'error' && '❌'}
                                                         </span>
                                                         <span className={`${styles.expandIcon} ${isExpanded ? styles.expanded : ''}`}>
                                                             ▼

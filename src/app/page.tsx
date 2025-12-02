@@ -96,8 +96,21 @@ export default function Home() {
     const newHistory = [...chatHistory, { role: 'user', content: message }];
     setChatHistory(newHistory);
 
+    // Reset safety status first
+    setSafetyStatus('normal');
+
     // Show safety banner for dangerous operations
-    if (message.toLowerCase().includes('reset') || message.toLowerCase().includes('delete all')) {
+    const lowerMessage = message.toLowerCase();
+    const isPriceUpdate = (lowerMessage.includes('update') || lowerMessage.includes('change') || lowerMessage.includes('set')) &&
+                          (lowerMessage.includes('price') || lowerMessage.includes('pricing'));
+
+    // Check for dangerous delete operations (but exclude cart operations)
+    const isCartDelete = lowerMessage.includes('cart') && (lowerMessage.includes('clear') || lowerMessage.includes('empty') || lowerMessage.includes('delete'));
+    const isSystemReset = lowerMessage.includes('reset') && !lowerMessage.includes('cart');
+    const isDeleteAll = lowerMessage.includes('delete all') || lowerMessage.includes('delete everything');
+    const isDangerousDelete = (isSystemReset || isDeleteAll) && !isCartDelete;
+
+    if (isDangerousDelete || isPriceUpdate) {
       setSafetyStatus('danger');
       addLog('error', 'SAFETY: Potentially dangerous operation detected.');
     }
@@ -177,6 +190,22 @@ export default function Home() {
                       }
                     ]);
                   } else if (data.type === 'tool_call') {
+                    // Create tool group if it doesn't exist yet
+                    if (!currentToolGroupId) {
+                      const toolGroupId = Math.random().toString(36).substr(2, 9);
+                      currentToolGroupId = toolGroupId;
+                      setLogs(prev => [
+                        ...prev,
+                        {
+                          id: toolGroupId,
+                          timestamp: new Date().toLocaleTimeString(),
+                          type: 'tool-group',
+                          message: 'Executing tools',
+                          tools: []
+                        }
+                      ]);
+                    }
+
                     // Format input - handle both object and string
                     let formattedInput = '';
                     if (data.input) {
@@ -189,30 +218,34 @@ export default function Home() {
                       }
                     }
 
-                    // Parse endpoint from tool name (e.g., "get_api-products" -> "GET /api/products")
-                    let endpoint = '';
+                    // Get human-readable tool title from the tool name
                     const toolName = data.tool;
-                    const methodMatch = toolName.match(/^(get|post|put|delete|patch)_(.+)$/i);
-                    if (methodMatch) {
-                      const method = methodMatch[1].toUpperCase();
-                      const path = '/' + methodMatch[2].replace(/-/g, '/');
-                      endpoint = `${method} ${path}`;
-                    }
+                    let displayName = toolName;
+
+                    // Convert tool name to title (e.g., "get_api-products" -> "Get products")
+                    const toolTitleMap: Record<string, string> = {
+                      'get_api-products': 'Get products',
+                      'get_api-cart': 'Get cart',
+                      'post_api-cart-items': 'Add item to cart',
+                      'delete_api-cart': 'Clear cart',
+                      'post_api-admin-pricing': 'Update product pricing',
+                      'delete_api-system-reset': 'Delete all data',
+                      'get_api-debug-logs': 'Get debug logs'
+                    };
+
+                    displayName = toolTitleMap[toolName] || toolName;
 
                     toolCalls.set(data.tool, {
-                      tool: data.tool,
+                      tool: displayName,
                       status: 'running',
-                      input: formattedInput || undefined,
-                      endpoint: endpoint || undefined
+                      input: formattedInput || undefined
                     });
                     // Update tool group
-                    if (currentToolGroupId) {
-                      setLogs(prev => prev.map(log =>
-                        log.id === currentToolGroupId
-                          ? { ...log, tools: Array.from(toolCalls.values()) }
-                          : log
-                      ));
-                    }
+                    setLogs(prev => prev.map(log =>
+                      log.id === currentToolGroupId
+                        ? { ...log, tools: Array.from(toolCalls.values()) }
+                        : log
+                    ));
                   } else if (data.type === 'tool_result') {
                     const existing = toolCalls.get(data.tool);
                     if (existing) {
