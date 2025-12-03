@@ -63,10 +63,13 @@ export class OpenAIProvider implements AgentProvider {
         this.mcpTools.set(tool.name, tool);
       });
 
-      console.log(`✓ Loaded ${this.tools.length} tools from MCP server:`);
+      console.log('========================================');
+      console.log(`🟢 [OpenAI Direct] Loaded ${this.tools.length} tools from MCP server:`);
       this.tools.forEach(tool => {
         console.log(`  - ${tool.function.name}: ${tool.function.description}`);
       });
+      console.log('🟢 [OpenAI Direct] NOTE: OpenAI will call MCP server directly');
+      console.log('========================================');
     } catch (error) {
       console.error('Failed to load MCP tools:', error);
       throw error;
@@ -208,7 +211,8 @@ export class OpenAIProvider implements AgentProvider {
           const toolResults = new Map<string, unknown>();
 
           for (const toolCall of currentToolCalls.values()) {
-            console.log(`Executing tool: ${toolCall.name} with args:`, toolCall.arguments);
+            console.log('🟢 [OpenAI Direct] Executing tool:', toolCall.name);
+            console.log('🟢 [OpenAI Direct] Calling MCP server directly at:', this.config.mcpServerUrl);
 
             yield {
               type: 'tool_call',

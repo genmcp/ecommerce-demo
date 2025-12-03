@@ -27,6 +27,7 @@ const AgentTerminal: React.FC<AgentTerminalProps> = ({ logs, onSendMessage, isPr
     const [inputValue, setInputValue] = React.useState('');
     const [expandedTools, setExpandedTools] = React.useState<Set<string>>(new Set());
     const [toolsEnabled, setToolsEnabled] = React.useState<boolean>(true);
+    const [provider, setProvider] = React.useState<string>('openai');
 
     useEffect(() => {
         setCurrentTime(new Date().toLocaleTimeString());
@@ -43,6 +44,7 @@ const AgentTerminal: React.FC<AgentTerminalProps> = ({ logs, onSendMessage, isPr
                 const response = await fetch('/api/status');
                 const data = await response.json();
                 setToolsEnabled(data.toolsEnabled);
+                setProvider(data.provider);
             } catch (error) {
                 console.error('Failed to check tool status:', error);
                 setToolsEnabled(false);
@@ -78,6 +80,27 @@ const AgentTerminal: React.FC<AgentTerminalProps> = ({ logs, onSendMessage, isPr
             <div className={styles.header}>
                 <span>Personal Shopper</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        fontSize: '11px',
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        backgroundColor: 'rgba(62, 134, 53, 0.1)',
+                        border: '1px solid rgba(62, 134, 53, 0.3)',
+                        color: '#3E8635'
+                    }}>
+                        <span style={{
+                            width: '8px',
+                            height: '8px',
+                            borderRadius: '50%',
+                            backgroundColor: '#3E8635',
+                            boxShadow: '0 0 10px #3E8635',
+                            display: 'inline-block'
+                        }}></span>
+                        {provider === 'llamastack' ? 'Llama Stack' : 'OpenAI'}
+                    </span>
                     <span style={{
                         display: 'flex',
                         alignItems: 'center',

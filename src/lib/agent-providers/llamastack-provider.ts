@@ -16,10 +16,13 @@ export class LlamaStackProvider implements AgentProvider {
   }
 
   async initialize(): Promise<void> {
+    console.log('========================================');
     console.log('LlamaStackProvider initialized');
     console.log('URL:', this.llamaStackUrl);
     console.log('Model:', this.modelId);
     console.log('Tool Group:', this.toolGroupId);
+    console.log('NOTE: Tools are called through Llama Stack, NOT directly to MCP');
+    console.log('========================================');
   }
 
   async *sendMessage(message: string, history: AgentMessage[]): AsyncGenerator<StreamEvent> {
@@ -31,6 +34,9 @@ export class LlamaStackProvider implements AgentProvider {
       if (!this.sessionId) {
         this.sessionId = await this.createSession(this.agentId);
       }
+
+      console.log('🔵 [Llama Stack] Sending request to:', `${this.llamaStackUrl}/v1/agents/${this.agentId}/session/${this.sessionId}/turn`);
+      console.log('🔵 [Llama Stack] Llama Stack will handle tool calls internally via tool group:', this.toolGroupId);
 
       const llamaResponse = await fetch(
         `${this.llamaStackUrl}/v1/agents/${this.agentId}/session/${this.sessionId}/turn`,
@@ -88,6 +94,8 @@ export class LlamaStackProvider implements AgentProvider {
                   } else if (delta?.type === 'tool_call') {
                     const toolName = delta.tool_call?.tool_name;
                     if (toolName) {
+                      console.log('🔵 [Llama Stack] Tool call detected:', toolName);
+                      console.log('🔵 [Llama Stack] This was routed through Llama Stack tool runtime');
                       yield {
                         type: 'tool_call',
                         toolCall: {
@@ -103,6 +111,8 @@ export class LlamaStackProvider implements AgentProvider {
                   if (stepDetail?.step_type === 'tool_execution') {
                     const toolResponses = stepDetail.tool_responses || [];
                     for (const tr of toolResponses) {
+                      console.log('🔵 [Llama Stack] Tool execution completed:', tr.tool_name);
+                      console.log('🔵 [Llama Stack] Result received from Llama Stack');
                       yield {
                         type: 'tool_result',
                         toolResult: {
