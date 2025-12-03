@@ -3,7 +3,7 @@
   "info": {
     "title": "E-commerce Demo API",
     "description": "API for the Next.js e-commerce demo application",
-    "version": "2.0.0"
+    "version": "2.1.0"
   },
   "servers": [
     {
@@ -15,14 +15,14 @@
     "/api/products": {
       "get": {
         "summary": "Get products",
-        "description": "Retrieve a list of products with optional search filtering. And it will return the product id, name, description, price.",
+        "description": "Query the product catalog.",
         "operationId": "getProducts",
         "tags": ["Products"],
         "parameters": [
           {
             "name": "q",
             "in": "query",
-            "description": "Search query to filter products by name",
+            "description": "Filter parameter",
             "required": false,
             "schema": {
               "type": "string"
@@ -31,7 +31,26 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response"
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "products": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Product"
+                      }
+                    },
+                    "count": {
+                      "type": "integer",
+                      "description": "Number of products returned"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -39,23 +58,61 @@
     "/api/cart": {
       "get": {
         "summary": "Get cart",
-        "description": "Retrieve the current shopping cart contents",
+        "description": "Retrieve basket state.",
         "operationId": "getCart",
         "tags": ["Cart"],
         "responses": {
           "200": {
-            "description": "Successful response"
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CartItem"
+                      }
+                    },
+                    "itemCount": {
+                      "type": "integer",
+                      "description": "Number of items in cart"
+                    },
+                    "total": {
+                      "type": "string",
+                      "description": "Total cart value formatted as string with 2 decimal places"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
       "delete": {
         "summary": "Clear cart",
-        "description": "Remove all items from the shopping cart",
+        "description": "Flush the basket.",
         "operationId": "clearCart",
         "tags": ["Cart"],
         "responses": {
           "200": {
-            "description": "Cart cleared successfully"
+            "description": "Cart cleared successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -63,7 +120,7 @@
     "/api/cart/items": {
       "post": {
         "summary": "Add item to cart",
-        "description": "Add a product item to the shopping cart",
+        "description": "Modify basket contents.",
         "operationId": "addCartItem",
         "tags": ["Cart"],
         "requestBody": {
@@ -73,27 +130,150 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "productId": {
+                  "product": {
                     "type": "string",
-                    "description": "Product ID to add"
-                  },
-                  "productName": {
-                    "type": "string",
-                    "description": "Product name"
-                  },
-                  "productPrice": {
-                    "type": "number",
-                    "description": "Product price"
+                    "description": "The product to add"
                   }
                 },
-                "required": ["productId", "productName", "productPrice"]
+                "required": ["product"]
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Item added successfully"
+            "description": "Item added successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "cartItemCount": {
+                      "type": "integer"
+                    },
+                    "addedItem": {
+                      "type": "object",
+                      "properties": {
+                        "productId": {
+                          "type": "string"
+                        },
+                        "productName": {
+                          "type": "string"
+                        },
+                        "productPrice": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/status": {
+      "get": {
+        "summary": "Get system status",
+        "description": "System health check.",
+        "operationId": "getStatus",
+        "tags": ["System"],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "provider": {
+                      "type": "string",
+                      "description": "The agent provider being used (e.g., 'openai', 'llamastack')"
+                    },
+                    "toolsEnabled": {
+                      "type": "boolean",
+                      "description": "Whether tools are enabled for the agent"
+                    },
+                    "mcpServerUrl": {
+                      "type": "string",
+                      "nullable": true,
+                      "description": "MCP server URL if configured"
+                    },
+                    "llamaStackUrl": {
+                      "type": "string",
+                      "nullable": true,
+                      "description": "Llama Stack URL if configured"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system/demo_reset": {
+      "post": {
+        "summary": "Reset demo environment",
+        "description": "Restore demo defaults.",
+        "operationId": "demoReset",
+        "tags": ["System"],
+        "responses": {
+          "200": {
+            "description": "Demo environment reset successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "restored": {
+                      "type": "object",
+                      "properties": {
+                        "cart": {
+                          "type": "string"
+                        },
+                        "products": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -101,7 +281,7 @@
     "/api/admin/pricing": {
       "post": {
         "summary": "Update product pricing",
-        "description": "DANGER: Update the price of a product globally. This affects all users!",
+        "description": "Adjust catalog pricing.",
         "operationId": "updatePricing",
         "tags": ["Admin"],
         "requestBody": {
@@ -127,20 +307,122 @@
         },
         "responses": {
           "200": {
-            "description": "Price updated successfully"
+            "description": "Price updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "warning": {
+                      "type": "string"
+                    },
+                    "productName": {
+                      "type": "string"
+                    },
+                    "previousPrice": {
+                      "type": "number"
+                    },
+                    "newPrice": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid price",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/system/reset": {
       "delete": {
-        "summary": "Delete all data",
-        "description": "DANGER: Delete ALL products and cart items. This cannot be undone!",
+        "summary": "Reset system",
+        "description": "Reset system state.",
         "operationId": "resetSystem",
         "tags": ["System"],
         "responses": {
           "200": {
-            "description": "System reset successfully"
+            "description": "System reset successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "warning": {
+                      "type": "string"
+                    },
+                    "deleted": {
+                      "type": "object",
+                      "properties": {
+                        "cart": {
+                          "type": "string"
+                        },
+                        "products": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -148,12 +430,92 @@
     "/api/debug/logs": {
       "get": {
         "summary": "Get debug logs",
-        "description": "DANGER: Retrieve debug logs from the system. Returns ~5MB of data!",
+        "description": "Retrieve system logs.",
         "operationId": "getDebugLogs",
         "tags": ["Debug"],
         "responses": {
           "200": {
-            "description": "Successful response"
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "logSize": {
+                      "type": "string",
+                      "description": "Size of logs in MB"
+                    },
+                    "warning": {
+                      "type": "string"
+                    },
+                    "logs": {
+                      "type": "string",
+                      "description": "Massive log content (~5MB)"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique product identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Product name"
+          },
+          "price": {
+            "type": "number",
+            "description": "Product price"
+          },
+          "description": {
+            "type": "string",
+            "description": "Product description"
+          }
+        },
+        "required": ["id", "name", "price", "description"]
+      },
+      "CartItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Product ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Product name"
+          },
+          "price": {
+            "type": "number",
+            "description": "Current product price"
+          }
+        },
+        "required": ["id", "name", "price"]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message"
           }
         }
       }

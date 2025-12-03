@@ -40,6 +40,18 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    // Reload MCP tools on page load/refresh
+    const reloadTools = async () => {
+      try {
+        await fetch('/api/tools/reload', { method: 'POST' });
+        console.log('MCP tools reloaded');
+      } catch (error) {
+        console.error('Failed to reload MCP tools:', error);
+      }
+    };
+
+    reloadTools();
+
     setLogs([
       {
         id: '1',
@@ -54,10 +66,10 @@ export default function Home() {
         message: 'Agent online. Waiting for user instructions.'
       }
     ]);
-    
+
     // Initial cart fetch
     refreshCart();
-    
+
     // Poll for cart updates every 2 seconds (for demo)
     const interval = setInterval(refreshCart, 2000);
     return () => clearInterval(interval);
@@ -69,9 +81,7 @@ export default function Home() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          productId: product.id,
-          productName: product.name,
-          productPrice: product.price,
+          product: product.id,
         }),
       });
 

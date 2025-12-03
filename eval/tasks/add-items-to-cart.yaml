@@ -1,0 +1,29 @@
+apiVersion: gevals/v1alpha2
+kind: Task
+metadata:
+  name: add-items-to-cart
+  difficulty: medium
+spec:
+  prompt:
+    inline: "Add 3 of the 'Graphics Card' to my cart"
+  verify:
+  - http:
+      url: "http://localhost:3000/api/cart"
+      method: GET
+      expect:
+        status: 200
+        body:
+          fields:
+          - path: "items[0].id"
+            equals: "2"
+          - path: "items[0].price"
+            equals: 2500.00
+          - path: "itemCount"
+            equals: 3
+          - path: "total"
+            equals: "7500.00"
+  cleanup:
+  - http:
+      url: "http://localhost:3000/api/system/demo_reset"
+      method: POST
+

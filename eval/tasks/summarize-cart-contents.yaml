@@ -1,0 +1,29 @@
+apiVersion: gevals/v1alpha2
+kind: Task
+metadata:
+  name: summarize-cart-contents
+  difficulty: easy
+spec:
+  setup:
+  - http:
+      url: "http://localhost:3000/api/cart/items"
+      method: POST
+      body:
+        json:
+          product: "1"
+  - http:
+      url: "http://localhost:3000/api/cart/items"
+      method: POST
+      body:
+        json:
+          product: "3"
+  prompt:
+    inline: "What is in my cart?"
+  verify:
+  - llmJudge:
+      contains: "mechanical keyboard and multi-tool device"
+  cleanup:
+  - http:
+      url: "http://localhost:3000/api/system/demo_reset"
+      method: POST
+

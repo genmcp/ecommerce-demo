@@ -1,20 +1,13 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/genmcp/gen-mcp/refs/heads/main/specs/mcpfile-schema-0.1.0.json
-
 invocationBases:
   baseApi:
     http:
-      url: http://frontend:3000
-mcpFileVersion: 0.1.0
+      url: http://localhost:3000
+kind: MCPToolDefinitions
 name: E-commerce Demo API
-runtime:
-  loggingConfig: null
-  streamableHttpConfig:
-    port: 8080
-  transportProtocol: streamablehttp
+schemaVersion: 0.2.0
 tools:
 - annotations: null
-  description: Retrieve a list of products with optional search filtering. And it
-    will return the product id, name, description, price.
+  description: Query the product catalog.
   inputSchema:
     properties:
       q:
@@ -30,7 +23,7 @@ tools:
   name: get_api-products
   title: Get products
 - annotations: null
-  description: Retrieve the current shopping cart contents
+  description: Retrieve basket state.
   inputSchema:
     type: object
   invocation:
@@ -43,7 +36,7 @@ tools:
   name: get_api-cart
   title: Get cart
 - annotations: null
-  description: Remove all items from the shopping cart
+  description: Flush the basket.
   inputSchema:
     type: object
   invocation:
@@ -56,22 +49,13 @@ tools:
   name: delete_api-cart
   title: Clear cart
 - annotations: null
-  description: Add a product item to the shopping cart
+  description: Modify basket contents.
   inputSchema:
     properties:
-      productId:
-        description: Product ID to add
+      product:
         type: string
-      productName:
-        description: Product name
-        type: string
-      productPrice:
-        description: Product price
-        type: number
     required:
-    - productId
-    - productName
-    - productPrice
+    - product
     type: object
   invocation:
     extends:
@@ -83,7 +67,33 @@ tools:
   name: post_api-cart-items
   title: Add item to cart
 - annotations: null
-  description: 'DANGER: Update the price of a product globally. This affects all users!'
+  description: System health check.
+  inputSchema:
+    type: object
+  invocation:
+    extends:
+      extend:
+        url: /api/status
+      from: baseApi
+      override:
+        method: GET
+  name: get_api-status
+  title: Get system status
+- annotations: null
+  description: Restore demo defaults.
+  inputSchema:
+    type: object
+  invocation:
+    extends:
+      extend:
+        url: /api/system/demo_reset
+      from: baseApi
+      override:
+        method: POST
+  name: post_api-system-demo_reset
+  title: Reset demo environment
+- annotations: null
+  description: Adjust catalog pricing.
   inputSchema:
     properties:
       newPrice:
@@ -107,7 +117,7 @@ tools:
   name: post_api-admin-pricing
   title: Update product pricing
 - annotations: null
-  description: 'DANGER: Delete ALL products and cart items. This cannot be undone!'
+  description: Reset system state.
   inputSchema:
     type: object
   invocation:
@@ -118,9 +128,9 @@ tools:
       override:
         method: DELETE
   name: delete_api-system-reset
-  title: Delete all data
+  title: Reset system
 - annotations: null
-  description: 'DANGER: Retrieve debug logs from the system. Returns ~5MB of data!'
+  description: Retrieve system logs.
   inputSchema:
     type: object
   invocation:
@@ -132,4 +142,4 @@ tools:
         method: GET
   name: get_api-debug-logs
   title: Get debug logs
-version: 0.0.1
+version: 2.1.0

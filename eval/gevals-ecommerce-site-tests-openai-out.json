@@ -1,0 +1,341 @@
+[
+  {
+    "taskName": "add-items-to-cart",
+    "taskPath": "/Users/cmurray/repos/ecommerce-demo/eval/tasks/add-items-to-cart.yaml",
+    "taskPassed": true,
+    "taskOutput": "Added 3 × Graphics Card ($2,500 each) to your cart. Subtotal: $7,500.\nWould you like me to review your cart or proceed to checkout?",
+    "difficulty": "medium",
+    "assertionResults": {
+      "toolsUsed": {
+        "passed": true
+      },
+      "minToolCalls": {
+        "passed": true
+      },
+      "maxToolCalls": {
+        "passed": true
+      }
+    },
+    "allAssertionsPassed": true,
+    "callHistory": {
+      "ToolCalls": [
+        {
+          "serverName": "ecommerce",
+          "timestamp": "2025-12-03T11:52:44.396725-05:00",
+          "success": true,
+          "name": "get_api-products",
+          "request": {
+            "Session": {},
+            "Params": {
+              "name": "get_api-products",
+              "arguments": {
+                "q": "Graphics Card"
+              }
+            },
+            "Extra": {
+              "TokenInfo": null,
+              "Header": {
+                "Accept": [
+                  "application/json, text/event-stream"
+                ],
+                "Accept-Encoding": [
+                  "gzip"
+                ],
+                "Content-Length": [
+                  "117"
+                ],
+                "Content-Type": [
+                  "application/json"
+                ],
+                "Mcp-Protocol-Version": [
+                  "2025-06-18"
+                ],
+                "Mcp-Session-Id": [
+                  "52SSS5BWH6CXV72DTJEP7JKH6N"
+                ],
+                "User-Agent": [
+                  "Go-http-client/1.1"
+                ]
+              }
+            }
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"products\":[{\"id\":\"1\",\"name\":\"Mechanical Keyboard\",\"price\":150,\"description\":\"Custom built with lubricated Holy Panda switches.\"},{\"id\":\"2\",\"name\":\"Graphics Card\",\"price\":2500,\"description\":\"The absolute pinnacle of graphics processing power.\"},{\"id\":\"3\",\"name\":\"Multi-Tool Device\",\"price\":169,\"description\":\"Multi-tool device for geeks.\"},{\"id\":\"4\",\"name\":\"Single-Board Computer\",\"price\":80,\"description\":\"Latest generation single-board computer.\"},{\"id\":\"5\",\"name\":\"Noise Cancelling Headphones\",\"price\":350,\"description\":\"Focus on your code with absolute silence.\"},{\"id\":\"6\",\"name\":\"Ergonomic Chair\",\"price\":1200,\"description\":\"Save your back during those long coding sessions.\"}],\"count\":6}"
+              }
+            ],
+            "structuredContent": {
+              "count": 6,
+              "products": [
+                {
+                  "description": "Custom built with lubricated Holy Panda switches.",
+                  "id": "1",
+                  "name": "Mechanical Keyboard",
+                  "price": 150
+                },
+                {
+                  "description": "The absolute pinnacle of graphics processing power.",
+                  "id": "2",
+                  "name": "Graphics Card",
+                  "price": 2500
+                },
+                {
+                  "description": "Multi-tool device for geeks.",
+                  "id": "3",
+                  "name": "Multi-Tool Device",
+                  "price": 169
+                },
+                {
+                  "description": "Latest generation single-board computer.",
+                  "id": "4",
+                  "name": "Single-Board Computer",
+                  "price": 80
+                },
+                {
+                  "description": "Focus on your code with absolute silence.",
+                  "id": "5",
+                  "name": "Noise Cancelling Headphones",
+                  "price": 350
+                },
+                {
+                  "description": "Save your back during those long coding sessions.",
+                  "id": "6",
+                  "name": "Ergonomic Chair",
+                  "price": 1200
+                }
+              ]
+            }
+          }
+        },
+        {
+          "serverName": "ecommerce",
+          "timestamp": "2025-12-03T11:52:56.949498-05:00",
+          "success": true,
+          "name": "post_api-cart-items",
+          "request": {
+            "Session": {},
+            "Params": {
+              "name": "post_api-cart-items",
+              "arguments": {
+                "productId": "2",
+                "productName": "Graphics Card",
+                "productPrice": 2500
+              }
+            },
+            "Extra": {
+              "TokenInfo": null,
+              "Header": {
+                "Accept": [
+                  "application/json, text/event-stream"
+                ],
+                "Accept-Encoding": [
+                  "gzip"
+                ],
+                "Content-Length": [
+                  "166"
+                ],
+                "Content-Type": [
+                  "application/json"
+                ],
+                "Mcp-Protocol-Version": [
+                  "2025-06-18"
+                ],
+                "Mcp-Session-Id": [
+                  "52SSS5BWH6CXV72DTJEP7JKH6N"
+                ],
+                "User-Agent": [
+                  "Go-http-client/1.1"
+                ]
+              }
+            }
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"success\":true,\"message\":\"Item added to cart\",\"cartItemCount\":1,\"addedItem\":{\"productId\":\"2\",\"productName\":\"Graphics Card\",\"productPrice\":2500}}"
+              }
+            ],
+            "structuredContent": {
+              "addedItem": {
+                "productId": "2",
+                "productName": "Graphics Card",
+                "productPrice": 2500
+              },
+              "cartItemCount": 1,
+              "message": "Item added to cart",
+              "success": true
+            }
+          }
+        },
+        {
+          "serverName": "ecommerce",
+          "timestamp": "2025-12-03T11:52:56.964116-05:00",
+          "success": true,
+          "name": "post_api-cart-items",
+          "request": {
+            "Session": {},
+            "Params": {
+              "name": "post_api-cart-items",
+              "arguments": {
+                "productId": "2",
+                "productName": "Graphics Card",
+                "productPrice": 2500
+              }
+            },
+            "Extra": {
+              "TokenInfo": null,
+              "Header": {
+                "Accept": [
+                  "application/json, text/event-stream"
+                ],
+                "Accept-Encoding": [
+                  "gzip"
+                ],
+                "Content-Length": [
+                  "166"
+                ],
+                "Content-Type": [
+                  "application/json"
+                ],
+                "Mcp-Protocol-Version": [
+                  "2025-06-18"
+                ],
+                "Mcp-Session-Id": [
+                  "52SSS5BWH6CXV72DTJEP7JKH6N"
+                ],
+                "User-Agent": [
+                  "Go-http-client/1.1"
+                ]
+              }
+            }
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"success\":true,\"message\":\"Item added to cart\",\"cartItemCount\":2,\"addedItem\":{\"productId\":\"2\",\"productName\":\"Graphics Card\",\"productPrice\":2500}}"
+              }
+            ],
+            "structuredContent": {
+              "addedItem": {
+                "productId": "2",
+                "productName": "Graphics Card",
+                "productPrice": 2500
+              },
+              "cartItemCount": 2,
+              "message": "Item added to cart",
+              "success": true
+            }
+          }
+        },
+        {
+          "serverName": "ecommerce",
+          "timestamp": "2025-12-03T11:52:56.970839-05:00",
+          "success": true,
+          "name": "post_api-cart-items",
+          "request": {
+            "Session": {},
+            "Params": {
+              "name": "post_api-cart-items",
+              "arguments": {
+                "productId": "2",
+                "productName": "Graphics Card",
+                "productPrice": 2500
+              }
+            },
+            "Extra": {
+              "TokenInfo": null,
+              "Header": {
+                "Accept": [
+                  "application/json, text/event-stream"
+                ],
+                "Accept-Encoding": [
+                  "gzip"
+                ],
+                "Content-Length": [
+                  "166"
+                ],
+                "Content-Type": [
+                  "application/json"
+                ],
+                "Mcp-Protocol-Version": [
+                  "2025-06-18"
+                ],
+                "Mcp-Session-Id": [
+                  "52SSS5BWH6CXV72DTJEP7JKH6N"
+                ],
+                "User-Agent": [
+                  "Go-http-client/1.1"
+                ]
+              }
+            }
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"success\":true,\"message\":\"Item added to cart\",\"cartItemCount\":3,\"addedItem\":{\"productId\":\"2\",\"productName\":\"Graphics Card\",\"productPrice\":2500}}"
+              }
+            ],
+            "structuredContent": {
+              "addedItem": {
+                "productId": "2",
+                "productName": "Graphics Card",
+                "productPrice": 2500
+              },
+              "cartItemCount": 3,
+              "message": "Item added to cart",
+              "success": true
+            }
+          }
+        }
+      ],
+      "ResourceReads": null,
+      "PromptGets": null
+    },
+    "setupOutput": {
+      "Steps": [],
+      "Success": true,
+      "Error": ""
+    },
+    "agentOutput": {
+      "Steps": [
+        {
+          "type": "agent",
+          "success": true,
+          "message": "Added 3 × Graphics Card ($2,500 each) to your cart. Subtotal: $7,500.\nWould you like me to review your cart or proceed to checkout?",
+          "outputs": {
+            "output": "Added 3 × Graphics Card ($2,500 each) to your cart. Subtotal: $7,500.\nWould you like me to review your cart or proceed to checkout?"
+          }
+        }
+      ],
+      "Success": true,
+      "Error": ""
+    },
+    "verifyOutput": {
+      "Steps": [
+        {
+          "type": "http",
+          "success": true,
+          "message": "response passed all validation"
+        }
+      ],
+      "Success": true,
+      "Error": ""
+    },
+    "cleanupOutput": {
+      "Steps": [
+        {
+          "type": "http",
+          "success": true,
+          "message": "request completed (no expectations defined)"
+        }
+      ],
+      "Success": true,
+      "Error": ""
+    }
+  }
+]
