@@ -1,8 +1,9 @@
 # Frontend Next.js Application Dockerfile
 # Multi-stage build for optimized production image
+# Supports arm64 and amd64 platforms
 
 # Stage 1: Dependencies
-FROM node:20-alpine AS deps
+FROM --platform=$BUILDPLATFORM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
@@ -20,7 +21,7 @@ RUN \
   fi
 
 # Stage 2: Build
-FROM node:20-alpine AS builder
+FROM --platform=$BUILDPLATFORM node:20-alpine AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
@@ -68,4 +69,5 @@ ENV MCP_SERVER_URL=http://mcp-server-service:8080
 ENV ENABLE_TOOLS=true
 
 CMD ["node", "server.js"]
+
 

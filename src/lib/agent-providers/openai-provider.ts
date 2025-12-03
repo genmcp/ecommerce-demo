@@ -65,7 +65,7 @@ export class OpenAIProvider implements AgentProvider {
 
       console.log('========================================');
       console.log(`🟢 [OpenAI Direct] Loaded ${this.tools.length} tools from MCP server:`);
-      this.tools.forEach(tool => {
+      this.tools.forEach((tool: any) => {
         console.log(`  - ${tool.function.name}: ${tool.function.description}`);
       });
       console.log('🟢 [OpenAI Direct] NOTE: OpenAI will call MCP server directly');

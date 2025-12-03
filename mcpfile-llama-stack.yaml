@@ -3,7 +3,7 @@
 invocationBases:
   baseApi:
     http:
-      url: http://localhost:3000
+      url: http://frontend:3000
 mcpFileVersion: 0.1.0
 name: E-commerce Demo API
 runtime:
@@ -13,7 +13,8 @@ runtime:
   transportProtocol: streamablehttp
 tools:
 - annotations: null
-  description: Retrieve a list of products with optional search filtering
+  description: Retrieve a list of products with optional search filtering. And it
+    will return the product id, name, description, price.
   inputSchema:
     properties:
       q:
@@ -33,6 +34,10 @@ tools:
   description: Retrieve the current shopping cart contents
   inputSchema:
     type: object
+    properties:
+      _openai_compat:
+        type: string
+        description: Unused field for OpenAI schema compatibility
     additionalProperties: true
   invocation:
     extends:
@@ -47,6 +52,10 @@ tools:
   description: Remove all items from the shopping cart
   inputSchema:
     type: object
+    properties:
+      _openai_compat:
+        type: string
+        description: Unused field for OpenAI schema compatibility
     additionalProperties: true
   invocation:
     extends:
@@ -93,7 +102,8 @@ tools:
         description: New price for the product
         type: number
       productId:
-        description: Product ID to update
+        description: Product ID to update. You can get the product id from the /api/products
+          API
         type: string
     required:
     - productId
@@ -113,6 +123,10 @@ tools:
   description: 'DANGER: Delete ALL products and cart items. This cannot be undone!'
   inputSchema:
     type: object
+    properties:
+      _openai_compat:
+        type: string
+        description: Unused field for OpenAI schema compatibility
     additionalProperties: true
   invocation:
     extends:
@@ -127,6 +141,10 @@ tools:
   description: 'DANGER: Retrieve debug logs from the system. Returns ~5MB of data!'
   inputSchema:
     type: object
+    properties:
+      _openai_compat:
+        type: string
+        description: Unused field for OpenAI schema compatibility
     additionalProperties: true
   invocation:
     extends:

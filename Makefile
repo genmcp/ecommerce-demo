@@ -187,3 +187,4 @@ clean-images: ## Remove local container images
 	docker rmi $(LLAMA_STACK_IMAGE) || true
 	docker rmi $(MCP_SERVER_IMAGE) || true
 
+

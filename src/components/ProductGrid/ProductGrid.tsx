@@ -18,7 +18,7 @@ interface ProductGridProps {
 const AnimatedPrice = ({ value, isChanging }: { value: number; isChanging: boolean }) => {
     const [displayValue, setDisplayValue] = useState(value);
     const prevValueRef = useRef(value);
-    const animationRef = useRef<number>();
+    const animationRef = useRef<number | undefined>(undefined);
 
     useEffect(() => {
         const prevValue = prevValueRef.current;

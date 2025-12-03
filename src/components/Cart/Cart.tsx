@@ -51,12 +51,12 @@ const Cart = ({ items }: CartProps) => {
                 isNew: idx >= prevLength, // Only new items get animation
                 isRemoving: false,
             })));
-            
+
             // Remove "isNew" flag after animation
             setTimeout(() => {
                 setDisplayItems(prev => prev.map(item => ({ ...item, isNew: false })));
             }, 300);
-            
+
         } else if (currentLength < prevLength) {
             // Items removed - animate removal
             // First, mark excess items as removing
@@ -66,7 +66,7 @@ const Cart = ({ items }: CartProps) => {
                     isRemoving: idx >= currentLength,
                 }));
             });
-            
+
             // After animation, update to actual items
             setTimeout(() => {
                 setDisplayItems(items.map((item, idx) => ({
@@ -76,9 +76,25 @@ const Cart = ({ items }: CartProps) => {
                     isRemoving: false,
                 })));
             }, 300);
+        } else if (currentLength === prevLength && currentLength > 0) {
+            // Same length - check if prices have changed and update silently
+            setDisplayItems(prev => {
+                return prev.map((prevItem, idx) => {
+                    const currentItem = items[idx];
+                    if (currentItem && prevItem.price !== currentItem.price) {
+                        // Price changed - update without animation
+                        return {
+                            ...currentItem,
+                            key: prevItem.key,
+                            isNew: false,
+                            isRemoving: false,
+                        };
+                    }
+                    return prevItem;
+                });
+            });
         }
-        // If same length, don't update (prevents re-animation on poll)
-        
+
         prevLengthRef.current = currentLength;
     }, [items]);
 

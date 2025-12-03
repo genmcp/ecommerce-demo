@@ -1,0 +1,60 @@
+# Docker Compose for OpenAI Direct Version
+# This version connects directly to OpenAI with MCP server integration
+# Usage: docker-compose -f docker-compose.openai.yml up
+
+version: '3.8'
+
+services:
+  # MCP Server - Provides tools for the agent
+  mcp-server:
+    image: quay.io/rh-ee-leoli/mcpfile-openai:latest
+    container_name: mcp-server
+    platform: linux/arm64
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+    networks:
+      - agent-network
+    restart: unless-stopped
+
+  # Next.js Frontend - OpenAI Direct Mode
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
+    container_name: frontend-openai
+    ports:
+      - "3000:3000"
+    environment:
+      # Agent Provider Configuration
+      - AGENT_PROVIDER=openai
+
+      # OpenAI Configuration
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
+
+      # MCP Server Configuration
+      - MCP_SERVER_URL=http://mcp-server:8080
+
+      # Other Configuration
+      - DEFAULT_USER_ID=demo-user
+      - NODE_ENV=production
+    depends_on:
+      - mcp-server
+    networks:
+      - agent-network
+    restart: unless-stopped
+
+networks:
+  agent-network:
+    driver: bridge
+
+# To run this configuration:
+# 1. Create a .env file with your OPENAI_API_KEY
+# 2. docker-compose -f docker-compose.openai.yml up -d
+# 3. Access the application at http://localhost:3000

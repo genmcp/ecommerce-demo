@@ -1,0 +1,168 @@
+# OpenAI Direct Mode Deployment
+# This includes MCP Server and Frontend for OpenAI integration
+
+---
+# MCP Server Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-server
+  labels:
+    app: ecommerce-demo
+    component: mcp-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ecommerce-demo
+      component: mcp-server
+  template:
+    metadata:
+      labels:
+        app: ecommerce-demo
+        component: mcp-server
+    spec:
+      containers:
+        - name: mcp-server
+          image: quay.io/rh-ee-leoli/mcpfile-openai:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+
+---
+# MCP Server Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp-server
+  labels:
+    app: ecommerce-demo
+    component: mcp-server
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app: ecommerce-demo
+    component: mcp-server
+
+---
+# Frontend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: ecommerce-demo
+    component: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ecommerce-demo
+      component: frontend
+  template:
+    metadata:
+      labels:
+        app: ecommerce-demo
+        component: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: quay.io/rh-ee-leoli/ecommerce-frontend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          env:
+            # Agent Provider Configuration
+            - name: AGENT_PROVIDER
+              value: "openai"
+
+            # OpenAI Configuration
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openai-secret
+                  key: api-key
+            - name: OPENAI_MODEL
+              value: "gpt-4o-mini"
+
+            # MCP Server Configuration
+            - name: MCP_SERVER_URL
+              value: "http://mcp-server:8080"
+
+            # Other Configuration
+            - name: DEFAULT_USER_ID
+              value: "demo-user"
+            - name: NODE_ENV
+              value: "production"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+---
+# Frontend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  labels:
+    app: ecommerce-demo
+    component: frontend
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3000
+      targetPort: 3000
+      protocol: TCP
+      name: http
+  selector:
+    app: ecommerce-demo
+    component: frontend
+
+---
+# Route for Frontend
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: frontend
+  labels:
+    app: ecommerce-demo
+    component: frontend
+spec:
+  to:
+    kind: Service
+    name: frontend
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

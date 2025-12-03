@@ -1,0 +1,160 @@
+# Docker Compose for Llama Stack with Ollama
+# This version uses Llama Stack with local Ollama models
+# Usage: docker-compose -f docker-compose.ollama.yml up
+
+version: '3.8'
+
+services:
+  # Ollama - Local LLM inference engine
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    platform: linux/amd64,linux/arm64
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - agent-network
+    restart: unless-stopped
+    # Uncomment for GPU support (NVIDIA)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  # Ollama model puller - Downloads the model on startup
+  ollama-pull:
+    image: ollama/ollama:latest
+    container_name: ollama-pull
+    platform: linux/amd64,linux/arm64
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      - OLLAMA_HOST=ollama:11434
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        echo "Pulling model: ${OLLAMA_MODEL:-llama3.1:latest}"
+        ollama pull ${OLLAMA_MODEL:-llama3.1:latest}
+        echo "Model pulled successfully"
+    networks:
+      - agent-network
+
+  # MCP Server - Provides tools for the agent
+  mcp-server:
+    image: ghcr.io/your-org/mcp-server:latest
+    container_name: mcp-server
+    platform: linux/amd64,linux/arm64
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - agent-network
+
+  # Llama Stack - Agent orchestration with Ollama
+  llama-stack:
+    image: llamastack/distribution-ollama:latest
+    container_name: llama-stack-ollama
+    platform: linux/amd64,linux/arm64
+    ports:
+      - "8321:8321"
+    volumes:
+      - ./llama-stack-config/run-ollama.yaml:/app/run.yaml:ro
+      - llama-stack-data:/root/.llama
+    environment:
+      - OLLAMA_URL=http://ollama:11434
+      - MCP_SERVER_URL=http://mcp-server:8080
+      - SQLITE_STORE_DIR=/root/.llama/distributions/ollama
+    command: ["llama", "stack", "run", "/app/run.yaml", "--port", "8321"]
+    depends_on:
+      ollama:
+        condition: service_healthy
+      ollama-pull:
+        condition: service_completed_successfully
+      mcp-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8321/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - agent-network
+    restart: unless-stopped
+
+  # Next.js Frontend - Llama Stack with Ollama Mode
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
+    container_name: frontend-ollama
+    ports:
+      - "3000:3000"
+    environment:
+      # Agent Provider Configuration
+      - AGENT_PROVIDER=llamastack
+
+      # Llama Stack Configuration
+      - LLAMA_STACK_URL=http://llama-stack:8321
+      - INFERENCE_MODEL=${OLLAMA_MODEL:-ollama/llama3.1:latest}
+      - TOOL_GROUP_ID=ecommerce-api
+
+      # Ollama Configuration
+      - OLLAMA_URL=http://ollama:11434
+
+      # SQLite store directory
+      - SQLITE_STORE_DIR=/root/.llama/distributions/ollama
+
+      # Other Configuration
+      - DEFAULT_USER_ID=demo-user
+      - NODE_ENV=production
+    depends_on:
+      llama-stack:
+        condition: service_healthy
+    networks:
+      - agent-network
+    restart: unless-stopped
+
+volumes:
+  ollama-data:
+    driver: local
+  llama-stack-data:
+    driver: local
+
+networks:
+  agent-network:
+    driver: bridge
+
+# To run this configuration:
+# 1. (Optional) Create a .env file with OLLAMA_MODEL if you want a specific model
+# 2. docker-compose -f docker-compose.ollama.yml up -d
+# 3. Wait for Ollama to pull the model (check logs: docker-compose logs ollama-pull)
+# 4. Access the application at http://localhost:3000
+#
+# Notes:
+# - First startup will take time to download the LLM model
+# - For GPU support, uncomment the deploy section in the ollama service
+# - Default model is llama3.1:latest (~4.7GB)

@@ -1,0 +1,94 @@
+# Docker Compose for Llama Stack with OpenAI
+# This version uses Llama Stack as an orchestration layer with OpenAI models
+# Usage: docker-compose -f docker-compose.llamastack-openai.yml up
+
+version: '3.8'
+
+services:
+  # MCP Server - Provides tools for the agent
+  mcp-server:
+    image: quay.io/rh-ee-leoli/mcpfile-llama-stack:latest
+    container_name: mcp-server
+    platform: linux/arm64
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+    networks:
+      - agent-network
+    restart: unless-stopped
+
+  # Llama Stack - Agent orchestration with OpenAI
+  llama-stack:
+    image: llamastack/distribution-starter:latest
+    container_name: llama-stack-openai
+    ports:
+      - "8321:8321"
+    volumes:
+      - ./llama-stack-config/run-openai.yaml:/app/run.yaml:ro
+      - llama-stack-data:/app/.llama
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - MCP_SERVER_URL=http://mcp-server:8080
+      - SQLITE_STORE_DIR=/app/.llama/distributions/openai
+      - LLAMA_STACK_CONFIG=/app/run.yaml
+      - LLAMA_STACK_PORT=8321
+    depends_on:
+      - mcp-server
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8321/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - agent-network
+    restart: unless-stopped
+
+  # Next.js Frontend - Llama Stack with OpenAI Mode
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: frontend-llamastack-openai
+    ports:
+      - "3000:3000"
+    environment:
+      # Agent Provider Configuration
+      - AGENT_PROVIDER=llamastack
+
+      # Llama Stack Configuration
+      - LLAMA_STACK_URL=http://llama-stack:8321
+      - INFERENCE_MODEL=${OPENAI_MODEL:-openai/gpt-4o}
+      - TOOL_GROUP_ID=ecommerce-api
+
+      # SQLite store directory
+      - SQLITE_STORE_DIR=/app/.llama/distributions/openai
+
+      # Other Configuration
+      - DEFAULT_USER_ID=demo-user
+      - NODE_ENV=production
+    depends_on:
+      - llama-stack
+    networks:
+      - agent-network
+    restart: unless-stopped
+
+volumes:
+  llama-stack-data:
+    driver: local
+
+networks:
+  agent-network:
+    driver: bridge
+
+# To run this configuration:
+# 1. Create a .env file with your OPENAI_API_KEY
+# 2. (Optional) Set OPENAI_MODEL in .env (default: openai/gpt-4o)
+# 3. docker-compose -f docker-compose.llamastack-openai.yml up -d
+# 4. Access the application at http://localhost:3000
+#
+# Notes:
+# - This uses OpenAI models through Llama Stack orchestration
+# - Benefits: unified agent interface, tool management, session persistence
+# - The MCP server schema issue needs to be fixed for this to work properly

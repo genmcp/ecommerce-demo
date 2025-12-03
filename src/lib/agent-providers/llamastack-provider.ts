@@ -161,6 +161,9 @@ export class LlamaStackProvider implements AgentProvider {
           instructions: this.config.systemPrompt,
           toolgroups: [this.toolGroupId],
           enable_session_persistence: false,
+          sampling_params: {
+            max_tokens: 4096,
+          },
         }
       }),
     });

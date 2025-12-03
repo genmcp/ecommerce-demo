@@ -15,7 +15,7 @@
     "/api/products": {
       "get": {
         "summary": "Get products",
-        "description": "Retrieve a list of products with optional search filtering",
+        "description": "Retrieve a list of products with optional search filtering. And it will return the product id, name, description, price.",
         "operationId": "getProducts",
         "tags": ["Products"],
         "parameters": [
@@ -113,7 +113,7 @@
                 "properties": {
                   "productId": {
                     "type": "string",
-                    "description": "Product ID to update"
+                    "description": "Product ID to update. You can get the product id from the /api/products API"
                   },
                   "newPrice": {
                     "type": "number",
@@ -160,4 +160,5 @@
     }
   }
 }
+
 

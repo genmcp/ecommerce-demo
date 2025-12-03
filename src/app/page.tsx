@@ -256,7 +256,7 @@ export default function Home() {
                           // If it's an array, extract the text content
                           if (Array.isArray(data.output)) {
                             const textContent = data.output
-                              .map(item => {
+                              .map((item: any) => {
                                 if (item.type === 'text' && item.text) {
                                   // Try to parse the text as JSON for better formatting
                                   try {
