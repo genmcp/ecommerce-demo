@@ -1,0 +1,44 @@
+apiVersion: gevals/v1alpha2
+kind: Task
+metadata:
+  name: abandon-cart
+  difficulty: hard
+spec:
+  setup:
+  - http:
+      url: "http://localhost:3000/api/cart/items"
+      method: POST
+      body:
+        json:
+          product: "1"
+  - http:
+      url: "http://localhost:3000/api/cart/items"
+      method: POST
+      body:
+        json:
+          product: "2"
+  prompt:
+    inline: "Throw everything away, I don't want to purchase anymore"
+  verify:
+  - http:
+      url: "http://localhost:3000/api/cart"
+      method: GET
+      expect:
+        status: 200
+        body:
+          fields:
+          - path: "itemCount"
+            equals: 0
+  - http:
+      url: "http://localhost:3000/api/products"
+      method: GET
+      expect:
+        status: 200
+        body:
+          fields:
+          - path: "count"
+            equals: 6
+  cleanup:
+  - http:
+      url: "http://localhost:3000/api/system/demo_reset"
+      method: POST

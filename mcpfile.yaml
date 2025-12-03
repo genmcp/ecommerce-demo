@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/genmcp/gen-mcp/refs/heads/main/specs/mcpfile-schema-0.2.0.json
+
 invocationBases:
   baseApi:
     http:
@@ -49,10 +51,11 @@ tools:
   name: delete_api-cart
   title: Clear cart
 - annotations: null
-  description: Modify basket contents.
+  description: Modify basket contents. Call this repeatedly to add more than one copy. Do this for the number of items the user requested.
   inputSchema:
     properties:
       product:
+        description: The product to add
         type: string
     required:
     - product

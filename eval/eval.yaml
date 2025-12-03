@@ -5,7 +5,7 @@ metadata:
 config:
   agent:
     type: "builtin.openai-agent"
-    model: "gpt-5-nano"
+    model: "qwen3:8b"
   mcpConfigFile: ./mcp-config.yaml
   llmJudge:
     env:

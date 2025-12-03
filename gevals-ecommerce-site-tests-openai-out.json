@@ -1,9 +1,142 @@
 [
   {
+    "taskName": "abandon-cart",
+    "taskPath": "/Users/cmurray/repos/ecommerce-demo/eval/tasks/abandon-cart.yaml",
+    "taskPassed": true,
+    "taskOutput": "Your cart has been successfully cleared. Let me know if you need further assistance!",
+    "difficulty": "hard",
+    "assertionResults": {
+      "toolsUsed": {
+        "passed": true
+      },
+      "minToolCalls": {
+        "passed": true
+      },
+      "maxToolCalls": {
+        "passed": true
+      }
+    },
+    "allAssertionsPassed": true,
+    "callHistory": {
+      "ToolCalls": [
+        {
+          "serverName": "ecommerce",
+          "timestamp": "2025-12-03T14:59:48.484427-05:00",
+          "success": true,
+          "name": "delete_api-cart",
+          "request": {
+            "Session": {},
+            "Params": {
+              "name": "delete_api-cart",
+              "arguments": {}
+            },
+            "Extra": {
+              "TokenInfo": null,
+              "Header": {
+                "Accept": [
+                  "application/json, text/event-stream"
+                ],
+                "Accept-Encoding": [
+                  "gzip"
+                ],
+                "Content-Length": [
+                  "97"
+                ],
+                "Content-Type": [
+                  "application/json"
+                ],
+                "Mcp-Protocol-Version": [
+                  "2025-06-18"
+                ],
+                "Mcp-Session-Id": [
+                  "X6CWTFRLMYWZWN3NKB3WMTTX7N"
+                ],
+                "User-Agent": [
+                  "Go-http-client/1.1"
+                ]
+              }
+            }
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"success\":true,\"message\":\"Cart cleared\"}"
+              }
+            ],
+            "structuredContent": {
+              "message": "Cart cleared",
+              "success": true
+            }
+          }
+        }
+      ],
+      "ResourceReads": null,
+      "PromptGets": null
+    },
+    "setupOutput": {
+      "Steps": [
+        {
+          "type": "http",
+          "success": true,
+          "message": "request completed (no expectations defined)"
+        },
+        {
+          "type": "http",
+          "success": true,
+          "message": "request completed (no expectations defined)"
+        }
+      ],
+      "Success": true,
+      "Error": ""
+    },
+    "agentOutput": {
+      "Steps": [
+        {
+          "type": "agent",
+          "success": true,
+          "message": "Your cart has been successfully cleared. Let me know if you need further assistance!",
+          "outputs": {
+            "output": "Your cart has been successfully cleared. Let me know if you need further assistance!"
+          }
+        }
+      ],
+      "Success": true,
+      "Error": ""
+    },
+    "verifyOutput": {
+      "Steps": [
+        {
+          "type": "http",
+          "success": true,
+          "message": "response passed all validation"
+        },
+        {
+          "type": "http",
+          "success": true,
+          "message": "response passed all validation"
+        }
+      ],
+      "Success": true,
+      "Error": ""
+    },
+    "cleanupOutput": {
+      "Steps": [
+        {
+          "type": "http",
+          "success": true,
+          "message": "request completed (no expectations defined)"
+        }
+      ],
+      "Success": true,
+      "Error": ""
+    }
+  },
+  {
     "taskName": "add-items-to-cart",
     "taskPath": "/Users/cmurray/repos/ecommerce-demo/eval/tasks/add-items-to-cart.yaml",
     "taskPassed": true,
-    "taskOutput": "All set! I added 3 Graphics Cards to your cart.\n\nCart summary:\n- Items: 3 x Graphics Card\n- Price per item: 2500\n- Total: 7500.00\n\nWould you like to proceed to checkout or keep shopping?",
+    "taskOutput": "The 'Graphics Card' has been successfully added to your cart 3 times. Your cart now contains 3 items with a total value of $7,500. Would you like to view your cart details or proceed with checkout?",
     "difficulty": "medium",
     "assertionResults": {
       "toolsUsed": {
@@ -21,7 +154,7 @@
       "ToolCalls": [
         {
           "serverName": "ecommerce",
-          "timestamp": "2025-12-03T14:05:51.525568-05:00",
+          "timestamp": "2025-12-03T15:00:05.358928-05:00",
           "success": true,
           "name": "get_api-products",
           "request": {
@@ -51,7 +184,7 @@
                   "2025-06-18"
                 ],
                 "Mcp-Session-Id": [
-                  "34QNHXHB34IIRZQHHEHEFMKUGM"
+                  "6J645W7CDPUZ2DFTQN64TKNEOM"
                 ],
                 "User-Agent": [
                   "Go-http-client/1.1"
@@ -111,7 +244,7 @@
         },
         {
           "serverName": "ecommerce",
-          "timestamp": "2025-12-03T14:05:59.776948-05:00",
+          "timestamp": "2025-12-03T15:00:29.404074-05:00",
           "success": true,
           "name": "post_api-cart-items",
           "request": {
@@ -141,7 +274,7 @@
                   "2025-06-18"
                 ],
                 "Mcp-Session-Id": [
-                  "34QNHXHB34IIRZQHHEHEFMKUGM"
+                  "6J645W7CDPUZ2DFTQN64TKNEOM"
                 ],
                 "User-Agent": [
                   "Go-http-client/1.1"
@@ -170,7 +303,7 @@
         },
         {
           "serverName": "ecommerce",
-          "timestamp": "2025-12-03T14:05:59.790997-05:00",
+          "timestamp": "2025-12-03T15:00:29.409549-05:00",
           "success": true,
           "name": "post_api-cart-items",
           "request": {
@@ -200,7 +333,7 @@
                   "2025-06-18"
                 ],
                 "Mcp-Session-Id": [
-                  "34QNHXHB34IIRZQHHEHEFMKUGM"
+                  "6J645W7CDPUZ2DFTQN64TKNEOM"
                 ],
                 "User-Agent": [
                   "Go-http-client/1.1"
@@ -229,7 +362,7 @@
         },
         {
           "serverName": "ecommerce",
-          "timestamp": "2025-12-03T14:05:59.797082-05:00",
+          "timestamp": "2025-12-03T15:00:29.414113-05:00",
           "success": true,
           "name": "post_api-cart-items",
           "request": {
@@ -259,7 +392,7 @@
                   "2025-06-18"
                 ],
                 "Mcp-Session-Id": [
-                  "34QNHXHB34IIRZQHHEHEFMKUGM"
+                  "6J645W7CDPUZ2DFTQN64TKNEOM"
                 ],
                 "User-Agent": [
                   "Go-http-client/1.1"
@@ -285,74 +418,6 @@
               "success": true
             }
           }
-        },
-        {
-          "serverName": "ecommerce",
-          "timestamp": "2025-12-03T14:06:02.662026-05:00",
-          "success": true,
-          "name": "get_api-cart",
-          "request": {
-            "Session": {},
-            "Params": {
-              "name": "get_api-cart",
-              "arguments": {}
-            },
-            "Extra": {
-              "TokenInfo": null,
-              "Header": {
-                "Accept": [
-                  "application/json, text/event-stream"
-                ],
-                "Accept-Encoding": [
-                  "gzip"
-                ],
-                "Content-Length": [
-                  "94"
-                ],
-                "Content-Type": [
-                  "application/json"
-                ],
-                "Mcp-Protocol-Version": [
-                  "2025-06-18"
-                ],
-                "Mcp-Session-Id": [
-                  "34QNHXHB34IIRZQHHEHEFMKUGM"
-                ],
-                "User-Agent": [
-                  "Go-http-client/1.1"
-                ]
-              }
-            }
-          },
-          "result": {
-            "content": [
-              {
-                "type": "text",
-                "text": "{\"items\":[{\"id\":\"2\",\"name\":\"Graphics Card\",\"price\":2500},{\"id\":\"2\",\"name\":\"Graphics Card\",\"price\":2500},{\"id\":\"2\",\"name\":\"Graphics Card\",\"price\":2500}],\"itemCount\":3,\"total\":\"7500.00\"}"
-              }
-            ],
-            "structuredContent": {
-              "itemCount": 3,
-              "items": [
-                {
-                  "id": "2",
-                  "name": "Graphics Card",
-                  "price": 2500
-                },
-                {
-                  "id": "2",
-                  "name": "Graphics Card",
-                  "price": 2500
-                },
-                {
-                  "id": "2",
-                  "name": "Graphics Card",
-                  "price": 2500
-                }
-              ],
-              "total": "7500.00"
-            }
-          }
         }
       ],
       "ResourceReads": null,
@@ -368,9 +433,9 @@
         {
           "type": "agent",
           "success": true,
-          "message": "All set! I added 3 Graphics Cards to your cart.\n\nCart summary:\n- Items: 3 x Graphics Card\n- Price per item: 2500\n- Total: 7500.00\n\nWould you like to proceed to checkout or keep shopping?",
+          "message": "The 'Graphics Card' has been successfully added to your cart 3 times. Your cart now contains 3 items with a total value of $7,500. Would you like to view your cart details or proceed with checkout?",
           "outputs": {
-            "output": "All set! I added 3 Graphics Cards to your cart.\n\nCart summary:\n- Items: 3 x Graphics Card\n- Price per item: 2500\n- Total: 7500.00\n\nWould you like to proceed to checkout or keep shopping?"
+            "output": "The 'Graphics Card' has been successfully added to your cart 3 times. Your cart now contains 3 items with a total value of $7,500. Would you like to view your cart details or proceed with checkout?"
           }
         }
       ],
@@ -404,8 +469,8 @@
     "taskName": "summarize-cart-contents",
     "taskPath": "/Users/cmurray/repos/ecommerce-demo/eval/tasks/summarize-cart-contents.yaml",
     "taskPassed": true,
-    "taskOutput": "Here’s what’s in your cart:\n\n- Mechanical Keyboard — $150.00 (ID: 1)\n- Multi-Tool Device — $169.00 (ID: 3)\n\nSubtotal: $319.00\nTotal: $319.00\nItems in cart: 2\n\nWould you like to:\n- remove an item (tell me the product ID or name),\n- change quantities,\n- or proceed to checkout?",
-    "taskJudgeReason": "PASS under CONTAINS: The model response explicitly lists both items—Mechanical Keyboard and Multi-Tool Device—which semantically matches the reference answer “mechanical keyboard and multi-tool device.” Extra details (prices, IDs, totals) are non-contradictory and acceptable. Therefore, it contains all core information.",
+    "taskOutput": "Your cart contains:\n\n1. **Mechanical Keyboard** (ID: 1) - $150  \n2. **Multi-Tool Device** (ID: 3) - $169  \n\n**Total items:** 2  \n**Total cost:** $319.00  \n\nLet me know if you'd like to modify your cart or need further assistance!",
+    "taskJudgeReason": "Pass under CONTAINS: The model response explicitly lists both items in the reference—mechanical keyboard and multi-tool device—matching the core semantic content. Additional details (IDs, prices, totals) are extra but non-contradictory and do not affect inclusion.",
     "difficulty": "easy",
     "assertionResults": {
       "toolsUsed": {
@@ -423,7 +488,7 @@
       "ToolCalls": [
         {
           "serverName": "ecommerce",
-          "timestamp": "2025-12-03T14:06:06.371111-05:00",
+          "timestamp": "2025-12-03T15:00:42.519892-05:00",
           "success": true,
           "name": "get_api-cart",
           "request": {
@@ -451,7 +516,7 @@
                   "2025-06-18"
                 ],
                 "Mcp-Session-Id": [
-                  "QSJPKO3QN63MAEL7OORVJB2L4P"
+                  "DE5KGW5PNP5YZZZFSW2G6WFYWK"
                 ],
                 "User-Agent": [
                   "Go-http-client/1.1"
@@ -509,9 +574,9 @@
         {
           "type": "agent",
           "success": true,
-          "message": "Here’s what’s in your cart:\n\n- Mechanical Keyboard — $150.00 (ID: 1)\n- Multi-Tool Device — $169.00 (ID: 3)\n\nSubtotal: $319.00\nTotal: $319.00\nItems in cart: 2\n\nWould you like to:\n- remove an item (tell me the product ID or name),\n- change quantities,\n- or proceed to checkout?",
+          "message": "Your cart contains:\n\n1. **Mechanical Keyboard** (ID: 1) - $150  \n2. **Multi-Tool Device** (ID: 3) - $169  \n\n**Total items:** 2  \n**Total cost:** $319.00  \n\nLet me know if you'd like to modify your cart or need further assistance!",
           "outputs": {
-            "output": "Here’s what’s in your cart:\n\n- Mechanical Keyboard — $150.00 (ID: 1)\n- Multi-Tool Device — $169.00 (ID: 3)\n\nSubtotal: $319.00\nTotal: $319.00\nItems in cart: 2\n\nWould you like to:\n- remove an item (tell me the product ID or name),\n- change quantities,\n- or proceed to checkout?"
+            "output": "Your cart contains:\n\n1. **Mechanical Keyboard** (ID: 1) - $150  \n2. **Multi-Tool Device** (ID: 3) - $169  \n\n**Total items:** 2  \n**Total cost:** $319.00  \n\nLet me know if you'd like to modify your cart or need further assistance!"
           }
         }
       ],
@@ -523,7 +588,7 @@
         {
           "type": "llmJudge",
           "success": true,
-          "message": "PASS under CONTAINS: The model response explicitly lists both items—Mechanical Keyboard and Multi-Tool Device—which semantically matches the reference answer “mechanical keyboard and multi-tool device.” Extra details (prices, IDs, totals) are non-contradictory and acceptable. Therefore, it contains all core information."
+          "message": "Pass under CONTAINS: The model response explicitly lists both items in the reference—mechanical keyboard and multi-tool device—matching the core semantic content. Additional details (IDs, prices, totals) are extra but non-contradictory and do not affect inclusion."
         }
       ],
       "Success": true,
