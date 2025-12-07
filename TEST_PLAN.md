@@ -60,7 +60,7 @@ ollama pull llama3.1
 
 ```bash
 # Terminal 2: Start Llama Stack
-cd /Users/leoleo/Documents/Red\ Hat/rhug-2025-dec/frontend
+cd /Users/XXXXXX/repos/ecommerce-demo
 
 # Activate conda environment
 source ~/miniforge3/etc/profile.d/conda.sh
@@ -122,7 +122,7 @@ curl -X POST http://localhost:8321/v1/inference/chat-completion \
 ### 2.1 Setup Environment
 
 ```bash
-cd /Users/leoleo/Documents/Red\ Hat/rhug-2025-dec/frontend
+cd /Users/XXXXXX/repos/ecommerce-demo
 
 # Copy environment file
 cp .env.example .env.local
@@ -333,7 +333,7 @@ genmcp version
 ### 4.2 Convert OpenAPI (Optional - already done)
 
 ```bash
-cd /Users/leoleo/Documents/Red\ Hat/rhug-2025-dec/frontend
+cd /Users/XXXXXX/repos/ecommerce-demo
 
 # This was already created, but you can regenerate:
 genmcp convert ./public/openapi.json -o mcpfile-generated.yaml
@@ -346,7 +346,7 @@ diff mcpfile.yaml mcpfile-generated.yaml
 
 ```bash
 # Terminal 4: Start MCP server
-cd /Users/leoleo/Documents/Red\ Hat/rhug-2025-dec/frontend
+cd /Users/XXXXXX/repos/ecommerce-demo
 genmcp run -f mcpfile.yaml
 ```
 
@@ -475,7 +475,7 @@ Ensure all services are running:
 ### 5.6 Run Evaluation (Optional)
 
 ```bash
-cd /Users/leoleo/Documents/Red\ Hat/rhug-2025-dec/frontend
+cd /Users/XXXXXX/repos/ecommerce-demo
 
 # Set OpenAI API key for evaluation
 export OPENAI_API_KEY=your-key-here
@@ -532,7 +532,7 @@ docker login quay.io
 ### 6.2 Test Local Container Build
 
 ```bash
-cd /Users/leoleo/Documents/Red\ Hat/rhug-2025-dec/frontend
+cd /Users/XXXXXX/repos/ecommerce-demo
 
 # Build frontend image
 make build-frontend REGISTRY=local IMAGE_TAG=test
